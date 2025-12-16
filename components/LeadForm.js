@@ -107,7 +107,7 @@ export default function LeadForm({ city }) {
       </button>
 
       {status === 'success' && (
-        <p className={styles.success}>Thank you! We'll contact you soon.</p>
+        <p className={styles.success}>Thank you! We&apos;ll contact you soon.</p>
       )}
       {status === 'error' && (
         <p className={styles.error}>Something went wrong. Please try again.</p>

@@ -12,6 +12,21 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing required fields' })
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(to)) {
+      return res.status(400).json({ message: 'Invalid email format' })
+    }
+
+    if (from && !emailRegex.test(from)) {
+      return res.status(400).json({ message: 'Invalid from email format' })
+    }
+
+    // Validate content length
+    if (subject.length > 200 || body.length > 10000) {
+      return res.status(400).json({ message: 'Subject or body too long' })
+    }
+
     // Here you would integrate with an email service like SendGrid, AWS SES, etc.
     // For now, just log the email
     console.log('Email to be sent:', { to, subject, from: from || 'noreply@myleadagency.com' })

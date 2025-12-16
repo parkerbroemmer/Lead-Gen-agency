@@ -12,6 +12,23 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing required fields' })
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Invalid email format' })
+    }
+
+    // Validate phone format (basic validation)
+    const phoneRegex = /^[0-9\s\-\+\(\)]{10,}$/
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: 'Invalid phone number format' })
+    }
+
+    // Sanitize inputs (basic length checks)
+    if (name.length > 100 || (message && message.length > 1000)) {
+      return res.status(400).json({ message: 'Input too long' })
+    }
+
     // Here you would integrate with your email service or CRM
     // For now, just log the lead
     console.log('New lead submitted:', { name, email, phone, city, message })

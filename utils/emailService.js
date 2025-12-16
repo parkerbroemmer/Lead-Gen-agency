@@ -5,6 +5,21 @@
  */
 
 /**
+ * Escape HTML special characters to prevent XSS
+ * @param {string} text - Text to escape
+ * @returns {string} Escaped text
+ */
+function escapeHtml(text) {
+  if (!text) return ''
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+/**
  * Send an email using the configured email service
  * @param {Object} options - Email options
  * @param {string} options.to - Recipient email address
@@ -45,10 +60,12 @@ export async function sendEmail({ to, subject, body, from }) {
  * @returns {Promise<Object>} Response from email service
  */
 export async function sendWelcomeEmail(recipientEmail, recipientName, city) {
-  const subject = `Welcome to My Lead Agency${city ? ` - ${city}` : ''}`
+  const safeName = escapeHtml(recipientName)
+  const safeCity = escapeHtml(city)
+  const subject = `Welcome to My Lead Agency${city ? ` - ${safeCity}` : ''}`
   const body = `
-    <h1>Welcome ${recipientName}!</h1>
-    <p>Thank you for your interest in our lead generation services${city ? ` in ${city}` : ''}.</p>
+    <h1>Welcome ${safeName}!</h1>
+    <p>Thank you for your interest in our lead generation services${city ? ` in ${safeCity}` : ''}.</p>
     <p>One of our representatives will contact you shortly.</p>
     <p>Best regards,<br>My Lead Agency Team</p>
   `
@@ -67,15 +84,21 @@ export async function sendWelcomeEmail(recipientEmail, recipientName, city) {
  */
 export async function sendLeadNotification(leadData) {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@myleadagency.com'
-  const subject = `New Lead: ${leadData.name}${leadData.city ? ` from ${leadData.city}` : ''}`
+  const safeName = escapeHtml(leadData.name)
+  const safeEmail = escapeHtml(leadData.email)
+  const safePhone = escapeHtml(leadData.phone)
+  const safeCity = escapeHtml(leadData.city)
+  const safeMessage = escapeHtml(leadData.message)
+  
+  const subject = `New Lead: ${safeName}${leadData.city ? ` from ${safeCity}` : ''}`
   const body = `
     <h2>New Lead Submission</h2>
     <ul>
-      <li><strong>Name:</strong> ${leadData.name}</li>
-      <li><strong>Email:</strong> ${leadData.email}</li>
-      <li><strong>Phone:</strong> ${leadData.phone}</li>
-      ${leadData.city ? `<li><strong>City:</strong> ${leadData.city}</li>` : ''}
-      ${leadData.message ? `<li><strong>Message:</strong> ${leadData.message}</li>` : ''}
+      <li><strong>Name:</strong> ${safeName}</li>
+      <li><strong>Email:</strong> ${safeEmail}</li>
+      <li><strong>Phone:</strong> ${safePhone}</li>
+      ${leadData.city ? `<li><strong>City:</strong> ${safeCity}</li>` : ''}
+      ${leadData.message ? `<li><strong>Message:</strong> ${safeMessage}</li>` : ''}
     </ul>
     <p>Submitted at: ${new Date().toLocaleString()}</p>
   `

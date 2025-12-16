@@ -78,12 +78,18 @@ export async function getCallAnalytics(city, startDate, endDate) {
  */
 export async function getDynamicPhoneNumber(city, source) {
   // In production, request a dynamic number from your call tracking service
+  // TODO: Replace with actual call tracking service integration
+  // This placeholder should not be used in production
+  
+  if (!process.env.CALL_TRACKING_API_KEY) {
+    throw new Error('Call tracking service not configured. Please set CALL_TRACKING_API_KEY environment variable.')
+  }
   
   console.log('Getting dynamic phone number for:', { city, source })
 
   // Simulate dynamic number assignment
   return {
-    phoneNumber: '+1-555-123-4567', // This would be a real tracking number
+    phoneNumber: '+1-555-123-4567', // This would be a real tracking number from your service
     city,
     source,
     trackingId: `track_${Date.now()}`,
@@ -97,6 +103,11 @@ export async function getDynamicPhoneNumber(city, source) {
  * @returns {string} Formatted phone number
  */
 export function formatPhoneNumber(phoneNumber) {
+  // Validate input
+  if (!phoneNumber || typeof phoneNumber !== 'string') {
+    return phoneNumber || ''
+  }
+
   // Remove all non-digit characters
   const cleaned = phoneNumber.replace(/\D/g, '')
   
